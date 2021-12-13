@@ -43,6 +43,13 @@ public class Flock implements GameMovable {
     }
   }
   
+  @Override
+  public void reset() {
+    for (FlockMember member : members) {
+      member.reset();
+    }
+  }
+  
   private void calculateForces() {
     calculateSeparation();
     calculateAlignment();

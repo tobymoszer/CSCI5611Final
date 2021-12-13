@@ -14,7 +14,12 @@ public class FlockMember implements GameMovable {
   private Vector2 position;
   private Vector2 velocity;
   
-  private final float speed = 170f;
+  private final float SEPARATION_WEIGHT = 1f;
+  private final float ALIGNMENT_WEIGHT = .2f;
+  private final float COHESION_WEIGHT = 1f;
+  
+  private final float SPEED = 170f;
+  private final float MAX_FORCE = 1;
   
   private Color color = Color.RED;
   
@@ -92,20 +97,43 @@ public class FlockMember implements GameMovable {
   
   @Override
   public void update(float time) {
+  
+    //System.out.println(separation + " " + alignment + " " + cohesion);
     
-    acceleration.add(separation);
-    acceleration.add(alignment);
-    acceleration.add(cohesion);
-    acceleration.add(Vector2.randomVector(2000));
+    Vector2 force = Vector2.zero();
+  
+    force.add(separation.times(SEPARATION_WEIGHT));
+    force.add(alignment.times(ALIGNMENT_WEIGHT));
+    force.add(cohesion.times(COHESION_WEIGHT));
+    //force.add(Vector2.randomVector(1));
+    
+    force.clampToLength(MAX_FORCE);
+    
+    acceleration.add(force);
   
     position.add(velocity.times(time));
     velocity.add(acceleration.times(time));
-    velocity.clampToLength(speed);
+    velocity.clampToLength(SPEED);
     
     
     separation.reset();
     alignment.reset();
     cohesion.reset();
+  }
+  
+  @Override
+  public void reset() {
+    
+    separation.reset();
+    alignment.reset();
+    cohesion.reset();
+    velocity.reset();
+    acceleration.reset();
+  
+    position = new Vector2(
+        500 + (int) (Math.random() * 100),
+        500 + (int) (Math.random() * 100)
+    );
   }
   
   public void paint(Graphics g) {

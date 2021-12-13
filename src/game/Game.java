@@ -23,6 +23,10 @@ public class Game {
     flock.update(time);
   }
   
+  public void reset() {
+    flock.reset();
+  }
+  
   public void paint(Graphics g) {
     flock.paint(g);
   }

@@ -14,6 +14,11 @@ public class Player implements GameMovable{
   }
   
   @Override
+  public void reset() {
+  
+  }
+  
+  @Override
   public void paint(Graphics g) {
   
   }

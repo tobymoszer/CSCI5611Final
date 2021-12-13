@@ -4,4 +4,6 @@ public interface GameMovable extends GameDrawable {
   
   public void update(float time);
   
+  public void reset();
+  
 }

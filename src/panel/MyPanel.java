@@ -38,7 +38,9 @@ public class MyPanel extends JPanel implements KeyListener, MouseListener {
   
   @Override
   public void keyPressed(KeyEvent e) {
-  
+    if (e.getKeyChar() == 'r') {
+      game.reset();
+    }
   }
   
   @Override
