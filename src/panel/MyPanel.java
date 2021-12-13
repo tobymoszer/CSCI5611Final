@@ -3,6 +3,7 @@ package panel;
 import game.Game;
 
 import javax.swing.JPanel;
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -17,13 +18,17 @@ public class MyPanel extends JPanel implements KeyListener, MouseListener {
     this.game = game;
   }
   
-  public void update(long time) {
-  
+  public void update(float time) {
+    game.update(time);
+    
+    repaint();
   }
   
   @Override
   public void paintComponent(Graphics g) {
     super.paintComponent(g);
+    setBackground(Color.BLACK);
+    game.paint(g);
   }
   
   @Override

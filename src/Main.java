@@ -1,4 +1,5 @@
 import game.Game;
+import game.vectors.Vector2;
 import panel.MyPanel;
 
 import javax.swing.JFrame;
@@ -10,7 +11,7 @@ public class Main {
   
   public static void main(String[] args) {
   
-    Game game = new Game();
+    Game game = new Game(new Vector2(SIZE_X, SIZE_Y));
     
     JFrame frame = new JFrame("Flock Game");
     frame.setSize(SIZE_X, SIZE_Y);
@@ -29,10 +30,11 @@ public class Main {
     panel.repaint();
     
     long time = System.currentTimeMillis();
+    
     //main game loop
     while (true) {
-      long frameTime = System.currentTimeMillis() - time;
-      time = System.currentTimeMillis();
+      float frameTime = (System.nanoTime() - time)/1000000000f;
+      time = System.nanoTime();
       panel.update(frameTime);
     }
     
