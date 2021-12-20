@@ -3,6 +3,7 @@ package panel;
 import game.Game;
 import game.vectors.Vector2;
 
+import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 import java.awt.Color;
 import java.awt.Graphics;
@@ -11,8 +12,9 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-
-import static sun.audio.AudioPlayer.player;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
 public class MyPanel extends JPanel implements KeyListener, MouseListener {
   
@@ -21,8 +23,17 @@ public class MyPanel extends JPanel implements KeyListener, MouseListener {
   
   private Game game;
   
+  private BufferedImage background;
+  
   public MyPanel(Game game) {
     this.game = game;
+    
+    try {
+      background = ImageIO.read(new File("background.png"));
+    } catch (IOException e) {
+      System.err.println("Could not load background image");
+      e.printStackTrace();
+    }
   }
   
   public void update(float time) {
@@ -66,7 +77,7 @@ public class MyPanel extends JPanel implements KeyListener, MouseListener {
   @Override
   public void paintComponent(Graphics g) {
     super.paintComponent(g);
-    setBackground(Color.BLACK);
+    g.drawImage(background, 0, 0, null);
     game.paint(g);
   }
   

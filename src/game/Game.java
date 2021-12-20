@@ -100,7 +100,7 @@ public class Game implements ProjectileListener, GameListener {
     }
     
     for (Projectile projectile : flockProjectiles) {
-      projectile.paint(g, Color.GRAY);
+      projectile.paint(g, Color.ORANGE);
     }
     
     player.paint(g);
