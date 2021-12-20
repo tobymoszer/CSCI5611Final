@@ -111,6 +111,9 @@ public class FlockMember implements GameMovable {
   public void addForceAwayFromPlayer(Player player) {
     if (position.minus(player.getPosition()).length() < 600) {
       attackForce = position.minus(player.getPosition());
+      attackForce.setToLength(
+          200/(Math.pow(position.minus(player.getPosition()).length(), 2))
+      );
     }
   }
   
@@ -181,6 +184,10 @@ public class FlockMember implements GameMovable {
   public boolean isHit(Projectile projectile) {
     return position.minus(projectile.getPosition()).length() <
         size + projectile.SIZE;
+  }
+  
+  public void fireProjectile(Player player) {
+  
   }
   
   @Override

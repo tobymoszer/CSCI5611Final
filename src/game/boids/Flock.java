@@ -26,6 +26,8 @@ public class Flock implements GameMovable {
   
   private Player player;
   
+  private final float CHANGE_BEHAVIOR_CHANCE = .4f;
+  
   private Color color = Color.RED;
   
   public Flock(Player player, int size, Vector2 gameSize) {
@@ -45,13 +47,22 @@ public class Flock implements GameMovable {
     for (int i = 0; i <size; i++) {
       members.add(new FlockMember(center.copy(), gameSize, false));
     }
-    attackType = AttackType.SWARM;
+    attackType = AttackType.DEFAULT;
   }
   
   @Override
   public void update(float time) {
     
     calculateForces();
+    
+    if (Math.random()/time < CHANGE_BEHAVIOR_CHANCE) {
+      randomBehavior();
+    }
+  
+    if (Math.random()/time < attackType.getProjectileChance()) {
+      fireProjectile();
+    }
+    
     attackType.addForces(members, player);
     
     for (FlockMember member : members) {
@@ -60,6 +71,14 @@ public class Flock implements GameMovable {
         reset();
       }
     }
+  }
+  
+  private void randomBehavior() {
+    attackType = AttackType.randomType();
+  }
+  
+  private void fireProjectile() {
+    members.get((int)(Math.random() * members.size())).fireProjectile(player);
   }
   
   public boolean checkProjectile(Projectile projectile) {
@@ -112,7 +131,7 @@ public class Flock implements GameMovable {
   
   public void paint(Graphics g) {
     for (FlockMember member : members) {
-      g.setColor(color);
+      g.setColor(attackType.getColor());
       member.paint(g);
     }
   }
@@ -123,6 +142,16 @@ public class Flock implements GameMovable {
       void addForces(CopyOnWriteArrayList<FlockMember> members, Player player) {
         //nothing added for default
       }
+  
+      @Override
+      float getProjectileChance() {
+        return 2;
+      }
+  
+      @Override
+      Color getColor() {
+        return Color.BLUE;
+      }
     },
     SWARM {
       @Override
@@ -130,6 +159,16 @@ public class Flock implements GameMovable {
         for (FlockMember member : members) {
           member.addForceToPlayer(player);
         }
+      }
+  
+      @Override
+      float getProjectileChance() {
+        return 0;
+      }
+  
+      @Override
+      Color getColor() {
+        return Color.RED;
       }
     },
     AVOID {
@@ -139,10 +178,28 @@ public class Flock implements GameMovable {
           member.addForceAwayFromPlayer(player);
         }
       }
+  
+      @Override
+      float getProjectileChance() {
+        return 5;
+      }
+  
+      @Override
+      Color getColor() {
+        return Color.YELLOW;
+      }
     },
     ;
     
     abstract void addForces(CopyOnWriteArrayList<FlockMember> members, Player player);
+    
+    abstract float getProjectileChance();
+    
+    abstract Color getColor();
+    
+    static AttackType randomType() {
+      return values()[(int)(Math.random() * values().length)];
+    }
   }
   
 }

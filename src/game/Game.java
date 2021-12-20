@@ -16,6 +16,7 @@ public class Game {
   private Flock flock;
   
   private CopyOnWriteArrayList<Projectile> projectiles;
+  private CopyOnWriteArrayList<Projectile> flockProjectiles;
   
   private final int FLOCK_SIZE = 80;
   
