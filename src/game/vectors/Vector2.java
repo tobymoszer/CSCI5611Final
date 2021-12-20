@@ -114,6 +114,10 @@ public class Vector2 {
     return !(Double.isNaN(x) || Double.isNaN(y));
   }
   
+  public double getAngle() {
+    return Math.atan(y/x);
+  }
+  
   public static Vector2 interpolate(Vector2 a, Vector2 b, double t) {
     return a.plus((b.minus(a)).times(t));
   }
@@ -141,6 +145,13 @@ public class Vector2 {
   
   public static Vector2 zero() {
     return new Vector2(0, 0);
+  }
+  
+  public static Vector2 rotate(Vector2 vector, double angle) {
+    return new Vector2(
+        vector.x * Math.cos(angle) - vector.y * Math.sin(angle),
+        vector.x * Math.sin(angle) + vector.y * Math.cos(angle)
+    );
   }
   
 }

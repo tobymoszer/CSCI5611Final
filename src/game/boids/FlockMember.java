@@ -5,8 +5,8 @@ import game.Player;
 import game.projectiles.Projectile;
 import game.vectors.Vector2;
 
-import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Polygon;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class FlockMember implements GameMovable {
@@ -141,7 +141,7 @@ public class FlockMember implements GameMovable {
     force.add(alignment.times(ALIGNMENT_WEIGHT));
     force.add(cohesion.times(COHESION_WEIGHT));
     force.add(attackForce.times(ATTACK_WEIGHT));
-    //force.add(Vector2.randomVector(1));
+    force.add(Vector2.randomVector(1));
     
     force.clampToLength(MAX_FORCE);
     
@@ -215,6 +215,16 @@ public class FlockMember implements GameMovable {
   
   public void paint(Graphics g) {
     g.fillOval((int) position.x, (int) position.y, size, size);
+    
+    Vector2 direction = velocity.normalized();
+    direction.setToLength(size * 1.5);
+    g.fillOval(
+        (int) (position.x + direction.x) + size/2,
+        (int) (position.y + direction.y) + size/2,
+        size/3,
+        size/3
+    );
+    
   }
   
 }
