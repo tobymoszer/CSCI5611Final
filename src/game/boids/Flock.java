@@ -1,7 +1,9 @@
 package game.boids;
 
+import game.GameListener;
 import game.GameMovable;
 import game.Player;
+import game.ProjectileListener;
 import game.projectiles.Projectile;
 import game.vectors.Vector2;
 
@@ -28,16 +30,34 @@ public class Flock implements GameMovable {
   
   private final float CHANGE_BEHAVIOR_CHANCE = .4f;
   
+  private ProjectileListener projectileListener;
+  private GameListener gameListener;
+  
   private Color color = Color.RED;
   
-  public Flock(Player player, int size, Vector2 gameSize) {
-    this(player, size, gameSize, new Vector2(500, 500));
+  public Flock(
+      Player player,
+      int size,
+      Vector2 gameSize,
+      ProjectileListener projectileListener,
+      GameListener gameListener
+  ) {
+    this(player, size, gameSize, new Vector2(500, 500), projectileListener, gameListener);
   }
   
-  public Flock(Player player, int size, Vector2 gameSize, Vector2 center) {
+  public Flock(
+      Player player,
+      int size,
+      Vector2 gameSize,
+      Vector2 center,
+      ProjectileListener projectileListener,
+      GameListener gameListener
+  ) {
     members = new CopyOnWriteArrayList<>();
     this.player = player;
     this.gameSize = gameSize;
+    this.projectileListener = projectileListener;
+    this.gameListener = gameListener;
     originalSize = size;
     origin = center;
     setupFlock(center, size);
@@ -47,7 +67,7 @@ public class Flock implements GameMovable {
     for (int i = 0; i <size; i++) {
       members.add(new FlockMember(center.copy(), gameSize, false));
     }
-    attackType = AttackType.DEFAULT;
+    randomBehavior();
   }
   
   @Override
@@ -68,17 +88,23 @@ public class Flock implements GameMovable {
     for (FlockMember member : members) {
       member.update(time);
       if (member.hits(player)) {
-        reset();
+        gameListener.isOver();
       }
     }
   }
   
   private void randomBehavior() {
     attackType = AttackType.randomType();
+    
+    for (FlockMember member : members) {
+      member.setSpeed(attackType.getSpeed());
+    }
   }
   
   private void fireProjectile() {
-    members.get((int)(Math.random() * members.size())).fireProjectile(player);
+    Projectile projectile =
+        members.get((int)(Math.random() * members.size())).fireProjectile(player);
+    projectileListener.addProjectile(projectile);
   }
   
   public boolean checkProjectile(Projectile projectile) {
@@ -129,6 +155,10 @@ public class Flock implements GameMovable {
     }
   }
   
+  public int getSize() {
+    return members.size();
+  }
+  
   public void paint(Graphics g) {
     for (FlockMember member : members) {
       g.setColor(attackType.getColor());
@@ -146,6 +176,11 @@ public class Flock implements GameMovable {
       @Override
       float getProjectileChance() {
         return 2;
+      }
+  
+      @Override
+      float getSpeed() {
+        return 170;
       }
   
       @Override
@@ -167,6 +202,11 @@ public class Flock implements GameMovable {
       }
   
       @Override
+      float getSpeed() {
+        return 250;
+      }
+  
+      @Override
       Color getColor() {
         return Color.RED;
       }
@@ -185,6 +225,11 @@ public class Flock implements GameMovable {
       }
   
       @Override
+      float getSpeed() {
+        return 170;
+      }
+  
+      @Override
       Color getColor() {
         return Color.YELLOW;
       }
@@ -194,6 +239,8 @@ public class Flock implements GameMovable {
     abstract void addForces(CopyOnWriteArrayList<FlockMember> members, Player player);
     
     abstract float getProjectileChance();
+    
+    abstract float getSpeed();
     
     abstract Color getColor();
     

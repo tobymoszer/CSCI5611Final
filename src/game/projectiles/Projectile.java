@@ -41,4 +41,9 @@ public class Projectile implements GameMovable, GameDrawable {
     g.setColor(color);
     g.fillOval((int) position.x, (int) position.y, SIZE, SIZE);
   }
+  
+  public void paint(Graphics g, Color color) {
+    g.setColor(color);
+    g.fillOval((int) position.x, (int) position.y, SIZE, SIZE);
+  }
 }

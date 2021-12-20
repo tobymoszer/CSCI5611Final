@@ -39,6 +39,11 @@ public class Player implements GameMovable{
     return position.copy();
   }
   
+  public boolean checkProjectile(Projectile projectile) {
+    return position.minus(projectile.getPosition()).length() <
+        SIZE + projectile.SIZE;
+  }
+  
   @Override
   public void reset() {
     position.x = 800;

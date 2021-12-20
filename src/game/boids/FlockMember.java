@@ -24,7 +24,7 @@ public class FlockMember implements GameMovable {
   private final float COHESION_WEIGHT = 1f;
   private final float ATTACK_WEIGHT = 1f;
   
-  private final float SPEED = 170f;
+  private float speed;
   private final float MAX_FORCE = 85f;
   
   private int size = 20;
@@ -151,7 +151,7 @@ public class FlockMember implements GameMovable {
     
     position.add(velocity.times(time));
     velocity.add(acceleration.times(time));
-    velocity.clampToLength(SPEED);
+    velocity.clampToLength(speed);
     
     checkOutOfBounds();
     
@@ -186,8 +186,18 @@ public class FlockMember implements GameMovable {
         size + projectile.SIZE;
   }
   
-  public void fireProjectile(Player player) {
+  public Projectile fireProjectile(Player player) {
+    return new Projectile(
+        position.copy(),
+        new Vector2(
+            player.getPosition().x - position.x,
+            player.getPosition().y - position.y
+        ).normalized()
+    );
+  }
   
+  public void setSpeed(float speed) {
+    this.speed = speed;
   }
   
   @Override

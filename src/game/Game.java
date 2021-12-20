@@ -4,12 +4,13 @@ import game.boids.Flock;
 import game.projectiles.Projectile;
 import game.vectors.Vector2;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class Game {
+public class Game implements ProjectileListener, GameListener {
   
   private Player player;
   
@@ -18,12 +19,16 @@ public class Game {
   private CopyOnWriteArrayList<Projectile> projectiles;
   private CopyOnWriteArrayList<Projectile> flockProjectiles;
   
+  private boolean gameOver;
+  
   private final int FLOCK_SIZE = 80;
   
   public Game(Vector2 size) {
     player = new Player();
-    flock = new Flock(player, FLOCK_SIZE, size);
+    flock = new Flock(player, FLOCK_SIZE, size, this, this);
     projectiles = new CopyOnWriteArrayList<>();
+    flockProjectiles = new CopyOnWriteArrayList<>();
+    gameOver = false;
   }
   
   public void update(float time) {
@@ -39,8 +44,31 @@ public class Game {
       }
     }
     
+    ArrayList<Projectile> removeFlockProjectiles = new ArrayList<>();
+  
+    for (Projectile projectile : flockProjectiles) {
+      projectile.update(time);
+      if (player.checkProjectile(projectile)) {
+        removeFlockProjectiles.add(projectile);
+        gameOver = true;
+      }
+    }
+    
     for (Projectile projectile : removeProjectiles) {
       projectiles.remove(projectile);
+    }
+    
+    for (Projectile projectile : removeFlockProjectiles) {
+      flockProjectiles.remove(projectile);
+    }
+    
+    if (flock.getSize() == 0) {
+      gameOver = true;
+    }
+    
+    if (gameOver) {
+      reset();
+      gameOver = false;
     }
   }
   
@@ -61,16 +89,30 @@ public class Game {
     flock.reset();
     player.reset();
     projectiles.clear();
+    flockProjectiles.clear();
   }
   
   public void paint(Graphics g) {
     flock.paint(g);
     
-    
     for (Projectile projectile : projectiles) {
       projectile.paint(g);
     }
+    
+    for (Projectile projectile : flockProjectiles) {
+      projectile.paint(g, Color.GRAY);
+    }
+    
     player.paint(g);
   }
   
+  @Override
+  public void addProjectile(Projectile projectile) {
+    flockProjectiles.add(projectile);
+  }
+  
+  @Override
+  public void isOver() {
+    gameOver = true;
+  }
 }
