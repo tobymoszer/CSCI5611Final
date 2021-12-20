@@ -1,53 +1,62 @@
 package game.boids;
 
 import game.GameMovable;
+import game.Player;
+import game.projectiles.Projectile;
 import game.vectors.Vector2;
 
 import java.awt.Color;
 import java.awt.Graphics;
-import java.util.ArrayList;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class FlockMember implements GameMovable {
   
   private Vector2 separation, alignment, cohesion;
+  private Vector2 attackForce;
   private Vector2 acceleration;
   private Vector2 position;
   private Vector2 velocity;
   
-  private final float SEPARATION_WEIGHT = 1f;
-  private final float ALIGNMENT_WEIGHT = .2f;
+  private Vector2 gameSize;
+  
+  private final float SEPARATION_WEIGHT = 3f;
+  private final float ALIGNMENT_WEIGHT = .01f;
   private final float COHESION_WEIGHT = 1f;
+  private final float ATTACK_WEIGHT = 1f;
   
   private final float SPEED = 170f;
-  private final float MAX_FORCE = 1;
+  private final float MAX_FORCE = 85f;
   
   private Color color = Color.RED;
   
   private int size = 20;
   
-  public FlockMember(Vector2 position, boolean exactPosition) {
-    if (exactPosition) {
-      this.position = position;
-    } else {
-      this.position = new Vector2(
-          position.x + (int) (Math.random() * 100),
-          position.y + (int) (Math.random() * 100)
-      );
+  public FlockMember(Vector2 position, Vector2 gameSize, boolean exactPosition) {
+    this.position = position;
+    if (!exactPosition) {
+      scatter();
     }
+    this.gameSize = gameSize;
     separation = new Vector2(0, 0);
     alignment = new Vector2(0, 0);
     cohesion = new Vector2(0, 0);
+    attackForce = new Vector2(0, 0);
     acceleration = new Vector2(0, 0);
     velocity = new Vector2(0, 0);
   }
   
-  public void calculateSeparation(ArrayList<FlockMember> members, float distance) {
+  private void scatter() {
+    position.x += (int) (Math.random() * 100);
+    position.y += (int) (Math.random() * 100);
+  }
+  
+  public void calculateSeparation(CopyOnWriteArrayList<FlockMember> members, float distance) {
     for (FlockMember other : members) {
       if (!other.equals(this)) {
         if (position.minus(other.position).length() < distance) {
-          Vector2 currentSeparation = position.minus(other.position);
+          Vector2 currentSeparation = position.minus(other.position).normalized();
           currentSeparation.setToLength(
-              200f/currentSeparation.length()
+              200f/Math.pow(currentSeparation.length(), 2)
           );
           separation.add(currentSeparation);
         }
@@ -55,7 +64,7 @@ public class FlockMember implements GameMovable {
     }
   }
   
-  public void calculateAlignment(ArrayList<FlockMember> members, float distance) {
+  public void calculateAlignment(CopyOnWriteArrayList<FlockMember> members, float distance) {
     Vector2 averageVelocity = new Vector2(0, 0);
     int neighbors = 0;
     
@@ -71,10 +80,12 @@ public class FlockMember implements GameMovable {
     if (neighbors != 0) {
       averageVelocity.over(neighbors);
       alignment = averageVelocity.minus(velocity);
+    } else {
+      alignment = Vector2.zero();
     }
   }
   
-  public void calculateCohesion(ArrayList<FlockMember> members, float distance) {
+  public void calculateCohesion(CopyOnWriteArrayList<FlockMember> members, float distance) {
     
     Vector2 averagePosition = new Vector2(0, 0);
     int neighbors = 0;
@@ -90,9 +101,19 @@ public class FlockMember implements GameMovable {
     
     if (neighbors != 0) {
       averagePosition.over(neighbors);
-      cohesion = averagePosition.minus(position).normalized();
+      cohesion = averagePosition.minus(position);
     }
     
+  }
+  
+  public void addForceToPlayer(Player player) {
+    attackForce = player.getPosition().minus(position);
+  }
+  
+  public void addForceAwayFromPlayer(Player player) {
+    if (position.minus(player.getPosition()).length() < 600) {
+      attackForce = position.minus(player.getPosition());
+    }
   }
   
   @Override
@@ -102,23 +123,64 @@ public class FlockMember implements GameMovable {
     
     Vector2 force = Vector2.zero();
   
+    if (!separation.isZero()) {
+      separation.normalize();
+    }
+    if (!alignment.isZero()) {
+      alignment.normalize();
+    }
+    if (!cohesion.isZero()) {
+      cohesion.normalize();
+    }
+    if (!attackForce.isZero()) {
+      attackForce.normalize();
+    }
+  
     force.add(separation.times(SEPARATION_WEIGHT));
     force.add(alignment.times(ALIGNMENT_WEIGHT));
     force.add(cohesion.times(COHESION_WEIGHT));
+    force.add(attackForce.times(ATTACK_WEIGHT));
     //force.add(Vector2.randomVector(1));
     
     force.clampToLength(MAX_FORCE);
     
     acceleration.add(force);
-  
+    
     position.add(velocity.times(time));
     velocity.add(acceleration.times(time));
     velocity.clampToLength(SPEED);
     
+    checkOutOfBounds();
     
     separation.reset();
     alignment.reset();
     cohesion.reset();
+    attackForce.reset();
+  }
+  
+  private void checkOutOfBounds() {
+    if (position.x > gameSize.x) {
+      position.x -= gameSize.x;
+    }
+    if (position.x < 0) {
+      position.x += gameSize.x;
+    }
+    if (position.y > gameSize.y) {
+      position.y -= gameSize.y;
+    }
+    if (position.y < 0) {
+      position.y += gameSize.y;
+    }
+  }
+  
+  public boolean isHit(Projectile projectile) {
+    if (
+        position.minus(projectile.getPosition()).length() <
+            size + projectile.SIZE
+    ) {
+      return true;
+    }
+    return false;
   }
   
   @Override
@@ -130,10 +192,8 @@ public class FlockMember implements GameMovable {
     velocity.reset();
     acceleration.reset();
   
-    position = new Vector2(
-        500 + (int) (Math.random() * 100),
-        500 + (int) (Math.random() * 100)
-    );
+    position = new Vector2(500, 500);
+    scatter();
   }
   
   public void paint(Graphics g) {

@@ -98,8 +98,16 @@ public class Vector2 {
     return (double) Math.sqrt(dx*dx + dy*dy);
   }
   
+  public Vector2 copy() {
+    return new Vector2(x, y);
+  }
+  
   public boolean equals(Vector2 other) {
     return x == other.x && y == other.y;
+  }
+  
+  public boolean isZero() {
+    return x == 0 && y == 0;
   }
   
   public static Vector2 interpolate(Vector2 a, Vector2 b, double t) {
