@@ -110,6 +110,10 @@ public class Vector2 {
     return x == 0 && y == 0;
   }
   
+  public boolean exists() {
+    return !(Double.isNaN(x) || Double.isNaN(y));
+  }
+  
   public static Vector2 interpolate(Vector2 a, Vector2 b, double t) {
     return a.plus((b.minus(a)).times(t));
   }

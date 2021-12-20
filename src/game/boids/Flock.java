@@ -5,6 +5,7 @@ import game.Player;
 import game.projectiles.Projectile;
 import game.vectors.Vector2;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -24,6 +25,8 @@ public class Flock implements GameMovable {
   private final float COHESION_DISTANCE = 150;
   
   private Player player;
+  
+  private Color color = Color.RED;
   
   public Flock(Player player, int size, Vector2 gameSize) {
     this(player, size, gameSize, new Vector2(500, 500));
@@ -53,6 +56,9 @@ public class Flock implements GameMovable {
     
     for (FlockMember member : members) {
       member.update(time);
+      if (member.hits(player)) {
+        reset();
+      }
     }
   }
   
@@ -106,6 +112,7 @@ public class Flock implements GameMovable {
   
   public void paint(Graphics g) {
     for (FlockMember member : members) {
+      g.setColor(color);
       member.paint(g);
     }
   }

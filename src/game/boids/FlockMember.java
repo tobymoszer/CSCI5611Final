@@ -27,8 +27,6 @@ public class FlockMember implements GameMovable {
   private final float SPEED = 170f;
   private final float MAX_FORCE = 85f;
   
-  private Color color = Color.RED;
-  
   private int size = 20;
   
   public FlockMember(Vector2 position, Vector2 gameSize, boolean exactPosition) {
@@ -144,7 +142,9 @@ public class FlockMember implements GameMovable {
     
     force.clampToLength(MAX_FORCE);
     
-    acceleration.add(force);
+    if (force.exists()) {
+      acceleration.add(force);
+    }
     
     position.add(velocity.times(time));
     velocity.add(acceleration.times(time));
@@ -173,14 +173,14 @@ public class FlockMember implements GameMovable {
     }
   }
   
+  public boolean hits(Player player) {
+    return position.minus(player.getPosition()).length() <
+        size + player.SIZE;
+  }
+  
   public boolean isHit(Projectile projectile) {
-    if (
-        position.minus(projectile.getPosition()).length() <
-            size + projectile.SIZE
-    ) {
-      return true;
-    }
-    return false;
+    return position.minus(projectile.getPosition()).length() <
+        size + projectile.SIZE;
   }
   
   @Override
@@ -197,7 +197,6 @@ public class FlockMember implements GameMovable {
   }
   
   public void paint(Graphics g) {
-    g.setColor(color);
     g.fillOval((int) position.x, (int) position.y, size, size);
   }
   

@@ -12,7 +12,7 @@ public class Player implements GameMovable{
   private Vector2 direction;
   
   private final float SPEED = 300;
-  private int size = 20;
+  public final int SIZE = 20;
   
   private Color color = Color.WHITE;
   
@@ -48,6 +48,6 @@ public class Player implements GameMovable{
   @Override
   public void paint(Graphics g) {
     g.setColor(color);
-    g.fillOval((int) position.x, (int) position.y, size, size);
+    g.fillOval((int) position.x, (int) position.y, SIZE, SIZE);
   }
 }
