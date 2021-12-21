@@ -4,6 +4,7 @@ package game.vectors;
  * Vector Library
  * CSCI 5611 Vector 2 Library [Example]
  * Stephen J. Guy <sjguy@umn.edu>
+ * Adjusted for this project by Tobias Moszer <mosze006@umn.edu>
  */
 public class Vector2 {
   
