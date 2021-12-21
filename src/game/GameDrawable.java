@@ -2,8 +2,13 @@ package game;
 
 import java.awt.Graphics;
 
+/**
+ * Any Game element that can be drawn.
+ *
+ * @author tobymoszer
+ */
 public interface GameDrawable {
   
-  public void paint(Graphics g);
+  void paint(Graphics g);
   
 }

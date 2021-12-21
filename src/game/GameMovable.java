@@ -1,9 +1,14 @@
 package game;
 
+/**
+ * Any GameDrawable that can be moved.
+ *
+ * @author tobymoszer
+ */
 public interface GameMovable extends GameDrawable {
   
-  public void update(float time);
+  void update(float time);
   
-  public void reset();
+  void reset();
   
 }
