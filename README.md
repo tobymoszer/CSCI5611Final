@@ -62,7 +62,7 @@ There is a small dot in front of every boid to show which direction that boid is
 This project expands on the basics of force based interactions covered in class.
 
 All code (except for the core of the [Vector2](src/game/vectors/Vector2.java) library) is written exclusively by me in Java,
-using the built-in default graphics (no [processing](https://processing.org/)).
+using the built-in default graphics (no [Processing](https://processing.org/)).
 I modified and added to the [Vector2](src/game/vectors/Vector2.java) library a bit to better suit this project.
 
 ## Difficulties Encountered
