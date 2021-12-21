@@ -27,7 +27,7 @@ public class Player implements GameMovable{
     direction = new Vector2(0, 0);
   
     try {
-      image = ImageIO.read(new File("white_eye.png"));
+      image = ImageIO.read(new File("sprites/white_eye.png"));
     } catch (IOException e) {
       System.err.println("Could not load eye image");
       e.printStackTrace();

@@ -5,7 +5,6 @@ import game.vectors.Vector2;
 
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
-import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.MouseInfo;
 import java.awt.event.KeyEvent;
@@ -29,7 +28,7 @@ public class MyPanel extends JPanel implements KeyListener, MouseListener {
     this.game = game;
     
     try {
-      background = ImageIO.read(new File("background.png"));
+      background = ImageIO.read(new File("sprites/background.png"));
     } catch (IOException e) {
       System.err.println("Could not load background image");
       e.printStackTrace();
