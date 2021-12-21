@@ -9,6 +9,6 @@ import game.projectiles.Projectile;
  */
 public interface ProjectileListener {
   
-  public void addProjectile(Projectile projectile);
+  void addProjectile(Projectile projectile);
   
 }
